@@ -1,0 +1,19 @@
+
+OUTPUT = libshadenbt.so
+
+TOP_LEVEL_BUILDDIR = @top_builddir@
+
+OBJECTS = 
+
+INCLUDES = @srcdir@/include @srcdir@/../time/include @srcdir@/../io/include
+
+all: $(OUTPUT)
+	
+$(OUTPUT): $(OBJECTS)
+	@CC@ @LDFLAGS@ -shared -o $@ $^ -lm
+
+@builddir@/out/%.o: @srcdir@/src/%.c | @builddir@/out/
+	@CC@ @CFLAGS@ -DIO_BUILD -Wall -pedantic -std=c99 -fPIC $(foreach include,$(INCLUDES),-I$(include)) -c -o $@ $^
+
+@builddir@/out/:
+	mkdir $@

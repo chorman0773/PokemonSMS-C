@@ -2809,7 +2809,7 @@ os=${target_os}
 
 
 
-ac_config_files="$ac_config_files Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile"
+ac_config_files="$ac_config_files Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile sqlite/Makefile"
 
 
 ac_config_commands="$ac_config_commands json-c"
@@ -2817,8 +2817,6 @@ ac_config_commands="$ac_config_commands json-c"
 
 ac_config_commands="$ac_config_commands openssl"
 
-
-ac_config_commands="$ac_config_commands sqlite"
 
 
 ac_config_commands="$ac_config_commands lua"
@@ -3545,9 +3543,9 @@ do
     "util/io/Makefile") CONFIG_FILES="$CONFIG_FILES util/io/Makefile" ;;
     "util/shadenbt/Makefile") CONFIG_FILES="$CONFIG_FILES util/shadenbt/Makefile" ;;
     "util/net/Makefile") CONFIG_FILES="$CONFIG_FILES util/net/Makefile" ;;
+    "sqlite/Makefile") CONFIG_FILES="$CONFIG_FILES sqlite/Makefile" ;;
     "json-c") CONFIG_COMMANDS="$CONFIG_COMMANDS json-c" ;;
     "openssl") CONFIG_COMMANDS="$CONFIG_COMMANDS openssl" ;;
-    "sqlite") CONFIG_COMMANDS="$CONFIG_COMMANDS sqlite" ;;
     "lua") CONFIG_COMMANDS="$CONFIG_COMMANDS lua" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
@@ -3986,12 +3984,6 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 	mkdir -p openssl
 	pushd ./openssl
 	../$ac_top_srcdir/openssl/config
-	popd
- ;;
-    "sqlite":C)
-	mkdir -p sqlite
-	pushd ./sqlite
-	../$ac_top_srcdir/sqlite/configure
 	popd
  ;;
     "lua":C)

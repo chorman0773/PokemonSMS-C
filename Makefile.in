@@ -3,11 +3,11 @@ CC = @CC@
 INSTALL = @INSTALL@
 CDIALECT = c11
 
-INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include
-LIBS += m random coninteract ssl crypto sqlite3 lua
+INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @srcdir@/sqlite
+LIBS += m random coninteract ssl crypto sqlite3 lua json-c
 DEFINES += PLATFORM_OS=@os@
 
-LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite @bu
+LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite @builddir@/json-c/.libs
 
 
 ifeq (@build_type@,debug)
@@ -54,14 +54,23 @@ SRCDIR = @srcdir@/src
 OBJECTS := 
 
 
-OUTPUT := @builddir@/tigame@EXEEXT@
+OUTPUT := @builddir@/game@EXEEXT@
 
 export OS CFLAGS CPPFLAGS LDFLAGS DLLEXT CC INCLUDES DEFINES CDIALECT
 
-all: $(OUTPUT) extensions/all
+all-recursive:
+	+$(MAKE) -C random all
+	+$(MAKE) -C libconinteract all
+	+$(MAKE) -C lua all
+	+$(MAKE) -C sqlite all
+	+$(MAKE) -C openssl all
+	+$(MAKE) -C util all
+	+$(MAKE) all
+
+all: $(OUTPUT)
 
 
-$(OUTPUT): $(OBJECTS) $(LIBRARIES)
+$(OUTPUT): $(OBJECTS)
 	$(CC) $(ALL_LDFLAGS) -o $@ $^ $(foreach library,$(LIBS),-l$(library))
 
 $(OUTDIR)/:
@@ -71,7 +80,7 @@ $(OUTDIR)/%.o: $(SRCDIR)/%.c | $(OUTDIR)/
 	$(CC) $(ALL_CFLAGS) -frandom-seed="$@" -o $@ -c $^
 
 
-clean: random/clean libconinteract/clean openssl/clean lua/clean sqlite/clean 
+clean: 
 	rm -rf out/
 	rm -f $(OUTPUT)
 	
@@ -81,21 +90,6 @@ rebuild:
 
 distclean: clean
 	rm -rf @builddir@/config.log @builddir@/config.status @builddir@/Makefile $(BUILDDIRS)
-
-random/%: random/
-	+$(MAKE) -C random $*
-
-libconinteract/%: libconinteract/
-	+$(MAKE) -C libconinteract $*
-
-openssl/%: 
-	+$(MAKE) -C openssl $*
-
-json-c/%: 
-	+$(MAKE) -C json-c $*
-
-lua/%:
-	+$(MAKE) -C 
 
 
 
