@@ -4,12 +4,11 @@ INSTALL = @INSTALL@
 CDIALECT = c11
 
 INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include
-LIBS += m
+LIBS += m random coninteract ssl crypto sqlite3 lua
 DEFINES += PLATFORM_OS=@os@
 
-LIBDIRS = @builddir@/libconinteract @builddir@/random
+LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite @bu
 
-LIBRARIES = random/librandom.a libconinteract/libconinteract.a
 
 ifeq (@build_type@,debug)
 ALL_CLFAGS += -g
@@ -34,7 +33,7 @@ LDFLAGS = @LDFLAGS@
 
 ALL_CFLAGS = @CPPFLAGS@ @CFLAGS@ -pthread $(foreach include,$(INCLUDES),-I$(include)) $(foreach define,$(DEFINES),-D$(define)) -std=$(CDIALECT)
 
-ALL_LDFLAGS = @LDFLAGS@ -pthread 
+ALL_LDFLAGS = @LDFLAGS@ -pthread $(foreach libdir,$(LIBDIRS),-L$(libdir)) -Wl,-rpath,'$$ORIGIN/libs'
 
 ifeq ($(findstring linux,@os@),linux)
 LIBS += dl
@@ -52,7 +51,7 @@ OUTDIR = @builddir@/out
 EXTDIR = @builddir@/extensions
 SRCDIR = @srcdir@/src
 
-OBJECTS := $(OUTDIR)/Main.o $(OUTDIR)/Food.o $(OUTDIR)/Game.o $(OUTDIR)/ColoredWrite.o $(OUTDIR)/extload/ExtensionLoader.o $(OUTDIR)/Items.o $(OUTDIR)/Tiles.o
+OBJECTS := 
 
 
 OUTPUT := @builddir@/tigame@EXEEXT@
@@ -72,25 +71,22 @@ $(OUTDIR)/%.o: $(SRCDIR)/%.c | $(OUTDIR)/
 	$(CC) $(ALL_CFLAGS) -frandom-seed="$@" -o $@ -c $^
 
 
-clean:
+clean: random/clean libconinteract/clean openssl/clean lua/clean sqlite/clean 
 	rm -rf out/
 	rm -f $(OUTPUT)
-	+$(MAKE) random/clean
-	+$(MAKE) libconinteract/clean
-	+$(MAKE) extensions/clean
 	
 rebuild: 
 	+$(MAKE) clean
 	+$(MAKE) all
 
 distclean: clean
-	rm -rf @builddir@/config.log @builddir@/config.status @builddir@/Makefile @builddir@/include/tigame/ComAbi.h $(BUILDDIRS)
+	rm -rf @builddir@/config.log @builddir@/config.status @builddir@/Makefile $(BUILDDIRS)
 
 random/%: random/
-	+$(MAKE) SRCDIR=../@srcdir@/random -C random $*
+	+$(MAKE) -C random $*
 
 libconinteract/%: libconinteract/
-	+$(MAKE) SRCDIR=../@srcdir@/random -C libconinteract $*
+	+$(MAKE) -C libconinteract $*
 
 openssl/%: 
 	+$(MAKE) -C openssl $*

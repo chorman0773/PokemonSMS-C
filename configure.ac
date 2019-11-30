@@ -21,22 +21,36 @@ os=${target_os}
 AC_SUBST([os])
 
 
-AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile],[
-	mkdir {json-c,openssl,sqlite}
+AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile])
+
+AC_CONFIG_COMMANDS([json-c],[
+	mkdir -p json-c
 	pushd $ac_top_srcdir/json-c
 	./autogen.sh
 	popd
 	pushd ./json-c
 	../$ac_top_srcdir/json-c/configure
 	popd
+	
+])
+
+AC_CONFIG_COMMANDS([openssl],[
+	mkdir -p openssl
 	pushd ./openssl
 	../$ac_top_srcdir/openssl/config
 	popd
+])
+
+AC_CONFIG_COMMANDS([sqlite],[
+	mkdir -p sqlite
 	pushd ./sqlite
 	../$ac_top_srcdir/sqlite/configure
 	popd
 ])
 
+AC_CONFIG_COMMANDS([lua],[
+	cp -r $ac_top_srcdir/lua ./lua
+])
 
 
 
