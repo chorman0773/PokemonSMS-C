@@ -1,6 +1,18 @@
-[submodule "Random-C"]
-	path = Random-C
+[submodule "random"]
+	path = random
 	url = ../Random-C.git
 [submodule "libconinteract"]
 	path = libconinteract
 	url = ../libconinteract.git
+[submodule "lua"]
+	path = lua
+	url = https://github.com/lua/lua.git
+[submodule "json-c"]
+	path = json-c
+	url = https://github.com/json-c/json-c.git
+[submodule "sqlite"]
+	path = sqlite
+	url = https://github.com/mackyle/sqlite.git
+[submodule "openssl"]
+	path = openssl
+	url = https://github.com/openssl/openssl.git

@@ -1,0 +1,28 @@
+
+SRCDIR := @srcdir@
+OUTDIR := @builddir@
+
+OBJECTS = $(OUTDIR)/out/Random.o $(OUTDIR)/out/ThreadLocalRandom.o
+
+OUTPUT = $(OUTDIR)/librandom.a
+
+CDIALECT = c11
+
+INCLUDES = ./include
+
+ALL_CFLAGS = @CFLAGS@ $(foreach include,$(INCLUDES),-I$(include)) -fPIC -std=$(CDIALECT)
+
+all: $(OUTPUT)
+
+$(OUTPUT): $(OBJECTS)
+	$(AR) rcs $(OUTPUT) $(OBJECTS)
+
+
+$(OUTDIR)/out/:
+	mkdir $(OUTDIR)/out/	
+
+$(OUTDIR)/%.o: $(SRCDIR)/src/%.c | out/
+	$(CC) $(ALL_CFLAGS) -c -o $@ $^
+
+clean:
+	rm -rf $(OUTDIR)/out/ $(OUTPUT)
