@@ -1,0 +1,6 @@
+[submodule "Random-C"]
+	path = Random-C
+	url = ../Random-C.git
+[submodule "libconinteract"]
+	path = libconinteract
+	url = ../libconinteract.git
