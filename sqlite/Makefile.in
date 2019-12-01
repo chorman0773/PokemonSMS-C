@@ -1,6 +1,0 @@
-
-@builddir@/libsqlite3.a: @builddir@/sqlite3.o
-	$(CC) $(LDFLAGS) -o $@ $^
-
-@builddir@/sqlite3.o: @srcdir@/sqlite3.c
-	$(CC) $(CFLAGS) -o $@ $^

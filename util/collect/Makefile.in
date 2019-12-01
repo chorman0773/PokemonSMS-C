@@ -1,0 +1,24 @@
+
+OUTPUT = libcollect.so
+
+TOP_LEVEL_BUILDDIR = @top_builddir@
+UTIL_BUILDDIR = @builddir@/..
+
+LIBDIRS =
+
+LIBRARIES = 
+
+OBJECTS = @builddir@/out/Map.o
+
+INCLUDES = @srcdir@/include @srcdir@/../time/include @srcdir@/../io/include @top_srcdir@/
+
+all: $(OUTPUT)
+	
+$(OUTPUT): $(OBJECTS)
+	@CC@ @LDFLAGS@ $(foreach libdir,$(LIBDIRS),-L$(libdir)) -shared -o $@ $^ $(foreach library,$(LIBRARIES),-l$(library))
+
+@builddir@/out/%.o: @srcdir@/src/%.c | @builddir@/out/
+	@CC@ @CFLAGS@ -Wall -pedantic -std=c99 -fPIC $(foreach include,$(INCLUDES),-I$(include)) -c -o $@ $^
+
+@builddir@/out/:
+	mkdir $@

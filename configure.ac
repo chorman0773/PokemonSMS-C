@@ -21,7 +21,7 @@ os=${target_os}
 AC_SUBST([os])
 
 
-AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile sqlite/Makefile])
+AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile sqlite/Makefile])
 
 AC_CONFIG_COMMANDS([json-c],[
 	mkdir -p json-c
