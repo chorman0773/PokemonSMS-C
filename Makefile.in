@@ -3,7 +3,7 @@ CC = @CC@
 INSTALL = @INSTALL@
 CDIALECT = c11
 
-INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @srcdir@/sqlite
+INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @builddir@/sqlite
 LIBS += m random coninteract ssl crypto sqlite3 lua json-c
 DEFINES += PLATFORM_OS=@os@
 
@@ -73,7 +73,7 @@ all: $(OUTPUT)
 
 libs: 
 	mkdir -p libs/
-	find -O3 . -path ./libs -prune -o -name '*.so*' -exec cp '{}' libs/ \;
+	find -O3 . -path ./libs -prune -o -name 'lib*.so*' -exec cp '{}' libs/ \;
 
 $(OUTPUT): $(OBJECTS)
 	$(CC) $(ALL_LDFLAGS) -o $@ $^ $(foreach library,$(LIBS),-l$(library))

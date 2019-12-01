@@ -16,3 +16,6 @@
 [submodule "sqlite"]
 	path = sqlite
 	url = https://github.com/mackyle/sqlite.git
+[submodule "PokemonSMS-Core"]
+	path = PokemonSMS-Core
+	url = ../PokemonSMS.git
