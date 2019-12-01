@@ -1,4 +1,5 @@
 #include <Map.h>
+#include <stdlib.h>
 
 typedef enum{ RED, BLACK} Color;
 
@@ -12,7 +13,7 @@ typedef struct Node{
 } Node;
 
 struct TreeMap{
-    tigame_bool(*key_cmp_fn)(const void*,const void*);
+    bool(*key_cmp_fn)(const void*,const void*);
     void(*value_dealloc)(void*,void*);
     void(*key_dealloc)(void*,void*);
     void* alloc_data;
@@ -46,7 +47,7 @@ static Node* map_getUncle(Node* node){
     return map_getSibling(map_getParent(node));
 }
 
-static Node* map_rotateLeft(Node* node){
+static void map_rotateLeft(Node* node){
     Node* nnew = node->right;
     Node* parent = node->parent;
     
@@ -56,14 +57,15 @@ static Node* map_rotateLeft(Node* node){
     if(node->right)
         node->right->parent = node;
     
-    if(parent)
+    if(parent){
         if(node == parent->left)
             parent->left = nnew;
         else
             parent->right = nnew;
+	}
     nnew->parent = parent;
 }
-static Node* map_rotateRight(Node* node){
+static void map_rotateRight(Node* node){
     Node* nnew = node->left;
     Node* parent = node->parent;
     
@@ -73,11 +75,12 @@ static Node* map_rotateRight(Node* node){
     if(node->left)
         node->left->parent = node;
     
-    if(parent)
+    if(parent){
         if(node == parent->left)
             parent->left = nnew;
         else
             parent->right = nnew;
+    }
     nnew->parent = parent;
 }
 
@@ -144,7 +147,7 @@ void map_put(TreeMap* map,const void* key,void* value){
             else
                 break;
         }else{
-            map->value_dealloc(game,node->value);
+            map->value_dealloc(map->alloc_data,node->value);
             node->value = value;
             return;
         }
@@ -176,7 +179,7 @@ void* map_get(TreeMap* map,const void* key){
 	return NULL;
 }
 
-TreeMap* map_new(void* data,tigame_bool(*cmpFn)(const void*,const void*),void(*value_dtor)(void*,void*),void(*key_dtor)(void*,void*)){
+TreeMap* map_new(void* data,bool(*cmpFn)(const void*,const void*),void(*value_dtor)(void*,void*),void(*key_dtor)(void*,void*)){
     TreeMap* map = malloc(sizeof(TreeMap));
     map->root = NULL;
     map->key_cmp_fn = cmpFn;
@@ -188,12 +191,12 @@ TreeMap* map_new(void* data,tigame_bool(*cmpFn)(const void*,const void*),void(*v
 
 static void node_free(Node* node,TreeMap* map){
     if(node){
-        node_free(node->left,game,map);
-        node_free(node->right,game,map);
+        node_free(node->left,map);
+        node_free(node->right,map);
         map->value_dealloc(map->alloc_data,node->value);
         if(map->key_dealloc)
             map->key_dealloc(map->alloc_data,(void*)node->key);
-        (*game)->free(game,node);
+        free(node);
     }
 }
 

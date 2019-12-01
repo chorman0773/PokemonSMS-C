@@ -7,7 +7,7 @@ INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/inc
 LIBS += m random coninteract ssl crypto sqlite3 lua json-c
 DEFINES += PLATFORM_OS=@os@
 
-LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite @builddir@/json-c/.libs
+LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite/.libs @builddir@/json-c/.libs @builddir@/lua $(wildcard @builddir@/util/*)
 
 
 ifeq (@build_type@,debug)
@@ -48,15 +48,13 @@ DLLEXT = .dll
 endif
 
 OUTDIR = @builddir@/out
-EXTDIR = @builddir@/extensions
+LIBSDIR = @builddir@/libs
 SRCDIR = @srcdir@/src
 
-OBJECTS := 
+OBJECTS := $(OUTDIR)/Main.o
 
 
 OUTPUT := @builddir@/game@EXEEXT@
-
-export OS CFLAGS CPPFLAGS LDFLAGS DLLEXT CC INCLUDES DEFINES CDIALECT
 
 all-recursive:
 	+$(MAKE) -C random all
@@ -65,10 +63,17 @@ all-recursive:
 	+$(MAKE) -C sqlite all
 	+$(MAKE) -C openssl all
 	+$(MAKE) -C util all
+	+$(MAKE) -C json-c all
 	+$(MAKE) all
+	+$(MAKE) libs
 
 all: $(OUTPUT)
 
+.PHONY: libs
+
+libs: 
+	mkdir -p libs/
+	find -O3 . -path ./libs -prune -o -name '*.so*' -exec cp '{}' libs/ \;
 
 $(OUTPUT): $(OBJECTS)
 	$(CC) $(ALL_LDFLAGS) -o $@ $^ $(foreach library,$(LIBS),-l$(library))

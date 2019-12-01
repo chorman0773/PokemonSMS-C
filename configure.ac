@@ -43,9 +43,16 @@ AC_CONFIG_COMMANDS([openssl],[
 
 
 AC_CONFIG_COMMANDS([lua],[
-	cp -r $ac_top_srcdir/lua ./lua
+	cp -r $ac_top_srcdir/lua .
 ])
 
+AC_CONFIG_COMMANDS([sqlite],[
+	mkdir -p sqlite
+	pushd ./sqlite
+	../$ac_top_srcdir/sqlite/configure
+	touch ../$ac_top_srcdir/sqlite/manifest{,.uuid} # sqlite for some reason wanted a manifest at its source directory. Make sure they exist as part of the configure steps
+	popd
+])
 
 
 

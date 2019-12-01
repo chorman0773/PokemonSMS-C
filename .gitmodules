@@ -13,3 +13,6 @@
 [submodule "random"]
 	path = random
 	url = ../Random-C.git
+[submodule "sqlite"]
+	path = sqlite
+	url = https://github.com/mackyle/sqlite.git

@@ -2822,6 +2822,8 @@ ac_config_commands="$ac_config_commands openssl"
 ac_config_commands="$ac_config_commands lua"
 
 
+ac_config_commands="$ac_config_commands sqlite"
+
 
 
 
@@ -3548,6 +3550,7 @@ do
     "json-c") CONFIG_COMMANDS="$CONFIG_COMMANDS json-c" ;;
     "openssl") CONFIG_COMMANDS="$CONFIG_COMMANDS openssl" ;;
     "lua") CONFIG_COMMANDS="$CONFIG_COMMANDS lua" ;;
+    "sqlite") CONFIG_COMMANDS="$CONFIG_COMMANDS sqlite" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -3988,7 +3991,13 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 	popd
  ;;
     "lua":C)
-	cp -r $ac_top_srcdir/lua ./lua
+	cp -r $ac_top_srcdir/lua .
+ ;;
+    "sqlite":C)
+	mkdir -p sqlite
+	pushd ./sqlite
+	../$ac_top_srcdir/sqlite/configure
+	popd
  ;;
 
   esac
