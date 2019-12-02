@@ -3,12 +3,19 @@
 
 #ifdef __cplusplus
 extern"C"{
+#else
+#include <stdbool.h>
 #endif
 
 #include <stdint.h>
 #include <Stream.h>
+#include <BinaryIO.h>
+#include <Map.h>
+#include <List.h>
 
-typedef struct NBT_TAG NBT_Tag;
+
+
+typedef uint8_t TAG_Type;
 
 enum{
     TAG_End = 0,
@@ -26,11 +33,15 @@ enum{
     TAG_LongArray = 12,
     TAG_FloatArray = 13,
     TAG_DoubleArray = 14,
-    TAG_UUID = 15
-}
+    TAG_UUID = 15,
+    TAG_Count = 16,
+    TAG_AnyNumeric = 99
+};
 
-typedef struct Compound Compound;
-typedef struct List List;
+typedef struct NBTList{
+    uint8_t listTagType;
+    ArrayList* list;
+} NBTList;
 
 typedef struct ByteArray{
     int32_t len;
@@ -57,9 +68,67 @@ typedef struct DoubleArray{
     double* array;
 } DoubleArray;
 
-typedef uint8_t TAG_Type;
+typedef struct CompoundTag CompoundTag;
+typedef struct ListTag ListTag;
 
+typedef struct NBT_Tag NBT_Tag;
 
+NBT_Tag* NBT_CreateTag(TAG_Type);
+NBT_Tag* NBT_DupTag(NBT_Tag*);
+void NBT_FreeTag(NBT_Tag*);
+NBT_Tag* NBT_Read(NBT_Tag* tag,BinaryIO* io,version shade_v);
+void NBT_Write(NBT_Tag* tag,BinaryIO* io,version shade_v);
+
+//Direct Accessors
+int8_t* NBT_AsByte(NBT_Tag* tag);
+int16_t* NBT_AsShort(NBT_Tag* tag);
+int32_t* NBT_AsInt(NBT_Tag* tag);
+int64_t* NBT_AsLong(NBT_Tag* tag);
+float* NBT_AsFloat(NBT_Tag* tag);
+double* NBT_AsDouble(NBT_Tag* tag);
+const char* NBT_GetString(NBT_Tag* tag);
+void NBT_SetString(NBT_Tag* tag,const char* tag);
+UUID* NBT_AsUUID(NBT_Tag* tag);
+
+//Primitive-generic accessors
+bool NBT_GetBoolean(NBT_Tag* tag);
+int8_t NBT_GetByte(NBT_Tag* tag);
+int16_t NBT_GetShort(NBT_Tag* tag);
+int32_t NBT_GetInt(NBT_Tag* tag);
+int64_t NBT_GetLong(NBT_Tag* tag);
+float NBT_GetFloat(NBT_Tag* tag);
+double NBT_GetDouble(NBT_Tag* tag);
+
+//Special Accessors
+ListTag* NBT_AsList(NBT_Tag* tag);
+CompoundTag* NBT_AsCompound(NBT_Tag* tag);
+
+//Array Accessors
+ByteArray* NBT_AsByteArray(NBT_Tag* tag);
+IntArray* NBT_AsIntArray(NBT_Tag* tag);
+LongArray* NBT_AsLongArray(NBT_Tag* tag);
+FloatArray* NBT_AsFloatArray(NBT_Tag* tag);
+DoubleArray* NBT_AsDoubleArray(NBT_Tag* tag);
+
+bool NBT_IsTagType(NBT_Tag* tag,TAG_Type);
+
+void Compound_PutTag(CompoundTag* tag,const char* name,NBT_Tag* tag);
+NBT_Tag* Compound_GetTag(CompoundTag* tag,const char* name);
+bool Compound_HasTag(CompoundTag* tag,const char* name);
+bool Compound_HasTagType(CompoundTag* tag,const char* name,Tag_Type);
+bool Compound_GetBoolean(CompoundTag* tag,const char* name);
+int8_t Compound_GetByte(CompoundTag* tag,const char* name);
+int16_t Compound_GetShort(CompoundTag* tag,const char* name);
+int32_t Compound_GetInt(CompoundTag* tag,const char* name);
+int64_t Compound_GetLong(CompoundTag* tag,const char* name);
+float Compound_GetFloat(CompoundTag* tag,const char* name);
+double Compound_GetDouble(CompoundTag* tag,const char* name);
+UUID Compound_GetUUID(CompoundTag* tag,const char* name);
+
+int32_t List_GetLength(ListTag* tag);
+Tag_Type List_GetListTagType(ListTag* tag);
+bool List_Add(ListTag* tag,NBT_Tag* toAdd);
+NBT_Tag* List_Get(ListTag* tag,int32_t idx);
 
 #ifdef __cplusplus
 };

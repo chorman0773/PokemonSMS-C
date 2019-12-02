@@ -3,16 +3,19 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdio.h>
 
 struct BinaryIO{
     InputStream* in;
     OutputStream* out;
-    void(*err_handler)(void* data);
+    err_handler_t* err_handler;
     void* err_data;
+    const char* lastError;
     endianess end;
 };
 
-static void default_error_handler(void* v){
+static void default_error_handler(void* v,const char* lastError){
+    fprintf(stderr,"BinaryIO Error: %s\n",lastError);
     errno = EILSEQ;
 }
 
@@ -22,6 +25,7 @@ BinaryIO* wrapInputStream(InputStream* stream,endianess end){
     io->out = NULL;
     io->err_handler = default_error_handler;
     io->err_data = NULL;
+    io->lastError = NULL;
     io->end = end;
     return io;
 }
@@ -32,14 +36,19 @@ BinaryIO* wrapOutputStream(OutputStream* stream,endianess end){
     io->out = stream;
     io->err_handler = default_error_handler;
     io->err_data = NULL;
+    io->lastError = NULL;
     io->end = end;
     return io;
 }
 
-error_handler_t* setErrorHandler(BinaryIO* io,error_handler_t* err_handler,void* data){
+error_handler_t* setErrorHandler(BinaryIO* io,error_handler_t* err_handler,void* data,void** dataOut){
     error_handler_t* prev_handler = io->err_handler;
-    io->err_handler = err_handler;
-    io->err_data = data;
+    if(dataOut!=NULL)
+        *dataOut = io->err_data;
+    if(err_handler!=NULL)
+        io->err_handler = err_handler;
+    if(err_data!=NULL)
+        io->err_data = data;
     return prev_handler;
 }
 
@@ -200,7 +209,7 @@ int64_t read_i64(BinaryIO* in){
 uint8_t read_u8(BinaryIO* in){
     int32_t val = InputStream_readByte(in->in);
     if(val<0)
-        in->err_handler(in->err_data);
+        BinaryIO_raise_error(in,"EOF reached on stream");
     return (uint8_t)val;
 }
 uint16_t read_u16(BinaryIO* in){
@@ -276,7 +285,7 @@ char* read_string(BinaryIO* in){
     buff[len] = '\0';
     if(strlen(buff)!=len){
         free(buff);
-        in->err_handler(in->err_data);
+        BinaryIO_raise_error(in,"Read String ends abruptly, Illegal Null Byte on Stream");
         return NULL;
     }
     return buff;
@@ -304,4 +313,13 @@ Instant read_instant(BinaryIO* in){
         in->err_handler(in->err_data);
     }
     return dur;
+}
+
+void BinaryIO_raise_error(BinaryIO* io,const char* error){
+    io->lastError = error;
+    io->err_handler(io->err_data,error);
+}
+
+const char* BinaryIO_last_error(BinaryIO* io){
+    return io->lastError;
 }

@@ -8,7 +8,7 @@ LIBDIRS =
 
 LIBRARIES = 
 
-OBJECTS = @builddir@/out/Map.o
+OBJECTS = @builddir@/out/Map.o @builddir@/out/List.o
 
 INCLUDES = @srcdir@/include @srcdir@/../time/include @srcdir@/../io/include @top_srcdir@/
 

@@ -17,6 +17,7 @@ extern"C"{
 #include <stddef.h>
 
 typedef struct TreeMap TreeMap;
+typedef struct MapIterator MapIterator;
 
 void free_dtor(void* alloc_data,void* value);
 
@@ -25,6 +26,9 @@ void map_put(TreeMap* map,const void* key,void* value);
 TreeMap* map_new(void* data,bool(*cmpFn)(const void*,const void*),void(*value_dtor)(void* alloc_data,void* value),void(*key_dtor)(void* alloc_data,void* key));
 void map_free(TreeMap* map);
 
+MapIterator* map_begin(TreeMap* map);
+MapIterator* map_next(MapIterator* it);
+const void* map_deref_it(MapIterator* it);
 
 #ifdef __cplusplus
 }

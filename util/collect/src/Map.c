@@ -1,4 +1,5 @@
 #include <Map.h>
+#include <List.h>
 #include <stdlib.h>
 
 typedef enum{ RED, BLACK} Color;
@@ -18,6 +19,7 @@ struct TreeMap{
     void(*key_dealloc)(void*,void*);
     void* alloc_data;
     Node* root;
+    LinkedList* serialNodes;
 };
 
 void free_dtor(void* alloc_data,void* value){
@@ -133,6 +135,8 @@ void map_put(TreeMap* map,const void* key,void* value){
         nnode->right = NULL;
         nnode->color = BLACK;
 	    map->root = nnode;
+	    map->serialNodes = LinkedList_new(NULL);
+	    LinkedList_pushBack(map->serialNodes,node);
         return;
     }
     while(true){
@@ -164,6 +168,7 @@ void map_put(TreeMap* map,const void* key,void* value){
     nnode->right = NULL;
     nnode->color = RED;
     map_repair(nnode);
+    LinkedList_pushBack(map->serialNodes,node);
 }
 
 void* map_get(TreeMap* map,const void* key){
@@ -186,6 +191,7 @@ TreeMap* map_new(void* data,bool(*cmpFn)(const void*,const void*),void(*value_dt
     map->value_dealloc = value_dtor;
     map->key_dealloc = key_dtor;
     map->alloc_data = data;
+    map->serialNodes = NULL;
     return map;
 }
 
@@ -202,5 +208,19 @@ static void node_free(Node* node,TreeMap* map){
 
 void map_free(TreeMap* map){
     node_free(map->root,map);
+    if(map->serialNodes)
+       LinkedList_free(map->serialNodes);
     free(map);
 }
+
+MapIterator* map_begin(TreeMap* map){
+    return (MapIterator*)LinkedList_begin(map->serialNodes);
+}
+MapIterator* map_next(MapIterator* it){
+    return (MapIterator*)LinkedList_next((Iterator*)it);
+}
+const void* map_deref_it(MapIterator* it){
+    return ((Node*)LinkedList_dereference((Iterator*)it))->key;
+}
+
+

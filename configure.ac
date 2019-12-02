@@ -26,7 +26,7 @@ AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile 
 AC_CONFIG_COMMANDS([json-c],[
 	mkdir -p json-c
 	pushd $ac_top_srcdir/json-c
-	./autogen.sh
+	test -e ./configure || ./autogen.sh
 	popd
 	pushd ./json-c
 	../$ac_top_srcdir/json-c/configure
@@ -38,6 +38,7 @@ AC_CONFIG_COMMANDS([openssl],[
 	mkdir -p openssl
 	pushd ./openssl
 	../$ac_top_srcdir/openssl/config
+	ln -sfv ../$ac_top_srcdir/include ./
 	popd
 ])
 
@@ -54,6 +55,14 @@ AC_CONFIG_COMMANDS([sqlite],[
 	popd
 ])
 
+
+
+AC_CONFIG_COMMANDS([SDL],[
+	mkdir -p SDL
+	pushd ./SDL
+	../$ac_top_srcdir/SDL/configure
+	popd
+])
 
 
 

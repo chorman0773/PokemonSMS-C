@@ -17,9 +17,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-## License Exemptions & Included Programs
+## Included Programs & License Exemptions 
 
 `openssl` is released under the terms of the Apache License. It is  Copyright (c) 1998-2018 The OpenSSL Project.
+
+`curl` is released under the terms of a License Derived from the MIT License. Copyright (c) 1996 - 2019, Daniel Stenberg. 
 
 `sqlite` is dedicated by its developers to public domain. This dedication is preserved by the program. See <https://www.sqlite.org/copyright.html> for details on this dedication. 
 
@@ -31,6 +33,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 PokemonSMS is a fan made project consisting of a specification and a set of Core Libraries, for which an implementation can be built off the specification. The Core Libraries and the Implementation are codependant but perfectly substitutable. Neither PokemonSMS, the PokemonSMS Public Specification Project, nor this program are affiliated with or endorsed by Nintendo, Game Freak, or The Pokemon Company. 
 The project and all components are not offered for a fee, and are believed to fall under Fair Dealing in the Canadian Copyright Act. It is simiarily believed to fall under Fair Use in the United States of America, and similar provisions of copyright law applicable in other jurisdictions. Pokemon, all Pokemon games, and trademarks (registered and unregistered) related to Pokemon are owned by Nintendo, Game Freak, or The Pokemon Company.
+
+### Utility Programs
+
+Several programs of varying size are under the `util` and are built for linking purposes. These programs achieve various tasks necessary to execute the game, but not otherwise available. 
+The programs include
+`io` a LCS 4 (tentative, currently available as Connor Horman LCSD 1) compatible Binary IO Library.
+
+`shadenbt` which is used to save game progress in the ShadeNBT Format described [here](https://chorman0773.github.io/BinarySpecifiations/ShadeNBT). 
+
+`pkmcom` which implements the PkmCom Abstract Protocol and a Number of Base Protocols, including ones not part of the PkmCom Specification. 
+
+`collect` a basic C library that provides various data structures. 
+
 
 ## Building
 

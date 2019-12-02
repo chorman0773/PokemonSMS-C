@@ -27,11 +27,11 @@ enum{
     BINARY_BIG_ENDIAN = 1
 };
 
-typedef void(error_handler_t)(void*);
+typedef void(error_handler_t)(void*,const char*);
 
 IO_API BinaryIO* wrapInputStream(InputStream* stream,endianess end);
 IO_API BinaryIO* wrapOutputStream(OutputStream* stream,endianess end);
-IO_API error_handler_t* setErrorHandler(BinaryIO* io,error_handler_t* err_handler,void* data);
+IO_API error_handler_t* setErrorHandler(BinaryIO* io,error_handler_t* err_handler,void* data,void** savedData);
 
 IO_API void BinaryIO_free(BinaryIO*);
 
@@ -76,6 +76,8 @@ IO_API char* read_string(BinaryIO* in);
 IO_API Duration read_duration(BinaryIO* in);
 IO_API Instant read_instant(BinaryIO* in);
 
+IO_API void BinaryIO_raise_error(BinaryIO* io,const char* msg);
+IO_API const char* BinaryIO_last_error(BinaryIO* io);
 #ifdef __cplusplus
 };
 #endif

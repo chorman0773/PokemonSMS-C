@@ -3,11 +3,11 @@ CC = @CC@
 INSTALL = @INSTALL@
 CDIALECT = c11
 
-INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @builddir@/sqlite
-LIBS += m random coninteract ssl crypto sqlite3 lua json-c
+INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @builddir@/sqlite @builddir@/SDL/include @srcdir@/SDL/include
+LIBS += m random coninteract ssl crypto sqlite3 lua json-c SDL
 DEFINES += PLATFORM_OS=@os@
 
-LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite/.libs @builddir@/json-c/.libs @builddir@/lua $(wildcard @builddir@/util/*)
+LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite/.libs @builddir@/json-c/.libs @builddir@/lua $(wildcard @builddir@/util/*) @builddir@/SDL/build/.libs
 
 
 ifeq (@build_type@,debug)
@@ -62,8 +62,9 @@ all-recursive:
 	+$(MAKE) -C lua all
 	+$(MAKE) -C sqlite all
 	+$(MAKE) -C openssl all
-	+$(MAKE) -C util all
 	+$(MAKE) -C json-c all
+	+$(MAKE) -C util all
+	+$(MAKE) -C SDL all
 	+$(MAKE) all
 	+$(MAKE) libs
 

@@ -19,3 +19,9 @@
 [submodule "PokemonSMS-Core"]
 	path = PokemonSMS-Core
 	url = ../PokemonSMS.git
+[submodule "curl"]
+	path = curl
+	url = https://github.com/curl/curl.git
+[submodule "SDL"]
+	path = SDL
+	url = https://github.com/SDL-mirror/SDL.git

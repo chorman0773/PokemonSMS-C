@@ -2827,6 +2827,10 @@ ac_config_commands="$ac_config_commands sqlite"
 
 
 
+ac_config_commands="$ac_config_commands SDL"
+
+
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3551,6 +3555,7 @@ do
     "openssl") CONFIG_COMMANDS="$CONFIG_COMMANDS openssl" ;;
     "lua") CONFIG_COMMANDS="$CONFIG_COMMANDS lua" ;;
     "sqlite") CONFIG_COMMANDS="$CONFIG_COMMANDS sqlite" ;;
+    "SDL") CONFIG_COMMANDS="$CONFIG_COMMANDS SDL" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -3977,7 +3982,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
     "json-c":C) 
 	mkdir -p json-c
 	pushd $ac_top_srcdir/json-c
-	./autogen.sh
+	test -e ./configure || ./autogen.sh
 	popd
 	pushd ./json-c
 	../$ac_top_srcdir/json-c/configure
@@ -3988,6 +3993,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 	mkdir -p openssl
 	pushd ./openssl
 	../$ac_top_srcdir/openssl/config
+	ln -sfv ../$ac_top_srcdir/include ./
 	popd
  ;;
     "lua":C) 
@@ -3997,6 +4003,13 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 	mkdir -p sqlite
 	pushd ./sqlite
 	../$ac_top_srcdir/sqlite/configure
+	touch ../$ac_top_srcdir/sqlite/manifest{,.uuid} # sqlite for some reason wanted a manifest at its source directory. Make sure they exist as part of the configure steps
+	popd
+ ;;
+    "SDL":C) 
+	mkdir -p SDL
+	pushd ./SDL
+	../$ac_top_srcdir/SDL/configure
 	popd
  ;;
 
