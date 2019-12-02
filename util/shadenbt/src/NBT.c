@@ -174,6 +174,13 @@ void NBT_FreeTag(NBT_Tag* tag){
         tag->refCount--;
 }
 
+static char* nbt_strdup(const char* str){
+    size_t len = strlen(str)+1;
+    char* ret = (char*) malloc(len);
+    memcpy(ret,str,len);
+    return ret;
+}
+
 static void shade_handler(void* jmpBuff,const char* name){
     longjmp(*(jmp_buff*)jmpBuff,-1);
 }
@@ -231,25 +238,25 @@ NBT_Tag* NBT_Read(NBT_Tag* tag,BinaryIO* io,version shade_v){
     break;
     case TAG_List:
         {
-        TAG_Type type = read_u8(io);
-        if(type>=TAG_Count){
-            BinaryIO_raise_error(io,"Unknown Tag Type in List Tag");
-            __builtin_unreachable();//Since the error handler is currently doing a longjmp
-        }else if(shade_v<tag_minVersions[type]){
-           BinaryIO_raise_error(io,"Invalid Tag on stream for targeted shade version");
-           __builtin_unreachable();//Since the error handler is currently doing a longjmp
-        }
-        ArrayList_clear(tag->t_list.list);
-        int32_t len = read_i32(io);
-        if(len<0){
-            BinaryIO_raise_error(io,"Negative length on array tag");
-            __builtin_unreachable();//Since the error handler is currently doing a longjmp
-        }
-        for(int32_t i = 0;i<len;i++){
-            NBT_Tag* tag = NBT_CreateTag(type);
-            tag = NBT_Read(tag,io,shade_v);
-            ArrayList_add(&tag);
-        }
+            TAG_Type type = read_u8(io);
+            if(type>=TAG_Count){
+                BinaryIO_raise_error(io,"Unknown Tag Type in List Tag");
+                __builtin_unreachable();//Since the error handler is currently doing a longjmp
+            }else if(shade_v<tag_minVersions[type]){
+               BinaryIO_raise_error(io,"Invalid Tag on stream for targeted shade version");
+               __builtin_unreachable();//Since the error handler is currently doing a longjmp
+            }
+            ArrayList_clear(tag->t_list.list);
+            int32_t len = read_i32(io);
+            if(len<0){
+                BinaryIO_raise_error(io,"Negative length on array tag");
+                __builtin_unreachable();//Since the error handler is currently doing a longjmp
+            }
+            for(int32_t i = 0;i<len;i++){
+                NBT_Tag* tag = NBT_CreateTag(type);
+                tag = NBT_Read(tag,io,shade_v);
+                ArrayList_add(&tag);
+            }
         }
     break;
     case TAG_Compound:
@@ -258,24 +265,115 @@ NBT_Tag* NBT_Read(NBT_Tag* tag,BinaryIO* io,version shade_v){
             char* tagN;
             while((type=read_u8(io))!=0){
                 tagN = read_string(io);
-                TAG_Type
+                NBT_Tag* tag = NBT_CreateTag(type);
+                NBT_ReadTag(tag,io,shade_v);
+                map_put(tag->t_compound.map,tagN,tag);
             }
         }
+    break;
+    case TAG_IntArray:
+        if(tag->t_iarr.arr)
+            free(tag->t_iarr.arr);
+        tag->t_iarr.len = read_i32(io);
+        if(tag->t_iarr.len<0){
+            BinaryIO_raise_error(io,"Negative length on array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        tag->t_iarr.arr = (int32_t*)calloc(tag->t_iarr.len,sizeof(int32_t));
+        if(!tag->t_iarr.arr){
+            BinaryIO_raise_error(io,"Unable to allocate space for array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        for(int32_t i = 0;i<tag->t_iarr.len;i++)
+            tag->t_iarr.arr[i] = read_i32(io);
+    break;
+    case TAG_LongArray:
+        if(tag->t_larr.arr)
+            free(tag->t_larr.arr);
+        tag->t_larr.len = read_i32(io);
+        if(tag->t_larr.len<0){
+            BinaryIO_raise_error(io,"Negative length on array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        tag->t_larr.arr = (int64_t*)calloc(tag->t_larr.len,sizeof(int64_t));
+        if(!tag->t_larr.arr){
+            BinaryIO_raise_error(io,"Unable to allocate space for array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        for(int32_t i = 0;i<tag->t_larr.len;i++)
+            tag->t_larr.arr[i] = read_i64(io);
+    break;
+    case TAG_FloatArray:
+        if(tag->t_farr.arr)
+            free(tag->t_farr.arr);
+        tag->t_farr.len = read_i32(io);
+        if(tag->t_farr.len<0){
+            BinaryIO_raise_error(io,"Negative length on array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        tag->t_farr.arr = (float*)calloc(tag->t_farr.len,sizeof(float));
+        if(!tag->t_farr.arr){
+            BinaryIO_raise_error(io,"Unable to allocate space for array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        for(int32_t i = 0;i<tag->t_farr.len;i++)
+            tag->t_farr.arr[i] = read_f32(io);
+    break;
+    case TAG_DoubleArray:
+        if(tag->t_darr.arr)
+            free(tag->t_darr.arr);
+        tag->t_darr.len = read_i32(io);
+        if(tag->t_darr.len<0){
+            BinaryIO_raise_error(io,"Negative length on array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        tag->t_darr.arr = (double*)calloc(tag->t_darr.len,sizeof(double));
+        if(!tag->t_darr.arr){
+            BinaryIO_raise_error(io,"Unable to allocate space for array tag");
+            __builtin_unreachable();//Since the error handler is currently doing a longjmp
+        }
+        for(int32_t i = 0;i<tag->t_darr.len;i++)
+            tag->t_darr.arr[i] = read_f64(io);
+    break;
+    case TAG_UUID:
+        tag->t_uuid = read_uuid(io);
+    break;
     }
-    
+    return tag;
 }
-void NBT_Write(NBT_Tag* tag,BinaryIO* io,version shade_v);
+void NBT_Write(NBT_Tag* tag,BinaryIO* io,version shade_v){
+
+}
 
 //Direct Accessors
-int8_t* NBT_AsByte(NBT_Tag* tag);
-int16_t* NBT_AsShort(NBT_Tag* tag);
-int32_t* NBT_AsInt(NBT_Tag* tag);
-int64_t* NBT_AsLong(NBT_Tag* tag);
-float* NBT_AsFloat(NBT_Tag* tag);
-double* NBT_AsDouble(NBT_Tag* tag);
-const char* NBT_GetString(NBT_Tag* tag);
-void NBT_SetString(NBT_Tag* tag,const char* tag);
-UUID* NBT_AsUUID(NBT_Tag* tag);
+int8_t* NBT_AsByte(NBT_Tag* tag){
+    return &tag->t_byte;
+}
+int16_t* NBT_AsShort(NBT_Tag* tag){
+    return &tag->t_short;
+}
+int32_t* NBT_AsInt(NBT_Tag* tag){
+    return &tag->t_int;
+}
+int64_t* NBT_AsLong(NBT_Tag* tag){
+    return &tag->t_long;
+}
+float* NBT_AsFloat(NBT_Tag* tag){
+    return &tag->t_float;
+}
+double* NBT_AsDouble(NBT_Tag* tag){
+    return &tag->t_double;
+}
+const char* NBT_GetString(NBT_Tag* tag){
+    return tag->t_string;
+}
+void NBT_SetString(NBT_Tag* tag,const char* str){
+    free(tag->t_string);
+    tag->t_string = nbt_strdup(str);
+}
+UUID* NBT_AsUUID(NBT_Tag* tag){
+    return &tag->t_uuid;
+}
 
 //Primitive-generic accessors
 bool NBT_GetBoolean(NBT_Tag* tag);
@@ -287,17 +385,36 @@ float NBT_GetFloat(NBT_Tag* tag);
 double NBT_GetDouble(NBT_Tag* tag);
 
 //Special Accessors
-ListTag* NBT_AsList(NBT_Tag* tag);
-CompoundTag* NBT_AsCompound(NBT_Tag* tag);
+ListTag* NBT_AsList(NBT_Tag* tag){
+    return &tag->t_list;
+}
+CompoundTag* NBT_AsCompound(NBT_Tag* tag){
+    return &tag->t_compound;
+}
 
 //Array Accessors
-ByteArray* NBT_AsByteArray(NBT_Tag* tag);
-IntArray* NBT_AsIntArray(NBT_Tag* tag);
-LongArray* NBT_AsLongArray(NBT_Tag* tag);
-FloatArray* NBT_AsFloatArray(NBT_Tag* tag);
-DoubleArray* NBT_AsDoubleArray(NBT_Tag* tag);
+ByteArray* NBT_AsByteArray(NBT_Tag* tag){
+    return &tag->t_barr;
+}
+IntArray* NBT_AsIntArray(NBT_Tag* tag){
+    return &tag->t_iarr;
+}
+LongArray* NBT_AsLongArray(NBT_Tag* tag){
+    return &tag->t_larr;
+}
+FloatArray* NBT_AsFloatArray(NBT_Tag* tag){
+    return &tag->t_farr;
+}
+DoubleArray* NBT_AsDoubleArray(NBT_Tag* tag){
+    return &tag->t_darr;
+}
 
-bool NBT_IsTagType(NBT_Tag* tag,TAG_Type);
+bool NBT_IsTagType(NBT_Tag* tag,TAG_Type type){
+    if(type==TAG_AnyNumeric)
+        return tag->type>=TAG_Byte&&tag->type<=TAG_Float;
+    else
+        return tag->type==type;
+}
 
 void Compound_PutTag(CompoundTag* tag,const char* name,NBT_Tag* tag);
 NBT_Tag* Compound_GetTag(CompoundTag* tag,const char* name);
