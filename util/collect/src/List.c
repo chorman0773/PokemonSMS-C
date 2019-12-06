@@ -1,5 +1,8 @@
 #include <List.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
 
 struct Iterator{
     void* value;
@@ -102,7 +105,7 @@ ArrayList* ArrayList_new(void(*destructor)(void*),void(*copy)(void*,const void*)
     arr->valCopy = copy;
     arr->valRelocate = relocate;
     arr->valSize = valLen;
-    arr->len = 0;
+    arr->length = 0;
     arr->capacity = 16;
     arr->arr = (char*) calloc(arr->capacity,valLen);
     return arr;
@@ -110,16 +113,16 @@ ArrayList* ArrayList_new(void(*destructor)(void*),void(*copy)(void*,const void*)
 void ArrayList_add(ArrayList* arr,const void* val){
     if(arr->length==arr->capacity){
         arr->capacity *=2;
-        char* narr = (char*) calloc(arr->capacity,valLen);
+        char* narr = (char*) calloc(arr->capacity,arr->valSize);
         if(arr->valRelocate)
             for(size_t i = 0;i<arr->length;i++)
-                arr->valRelocate(narr+(i*valSize),arr->arr+(i*arr->valSize));
+                arr->valRelocate(narr+(i*arr->valSize),arr->arr+(i*arr->valSize));
         else
-            memcpy(narr,arr->arr,arr->length*arr->valSize);. 
+            memcpy(narr,arr->arr,arr->length*arr->valSize);
         free(arr->arr);
         arr->arr = narr;
     }
-    char* ptr = arr->arr + (arr->length*valSize);
+    char* ptr = arr->arr + (arr->length*arr->valSize);
     if(arr->valCopy)
         arr->valCopy(ptr,val);
     else

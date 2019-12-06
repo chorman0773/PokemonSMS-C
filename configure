@@ -2809,7 +2809,7 @@ os=${target_os}
 
 
 
-ac_config_files="$ac_config_files Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile sqlite/Makefile"
+ac_config_files="$ac_config_files Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile"
 
 
 ac_config_commands="$ac_config_commands json-c"
@@ -2822,13 +2822,23 @@ ac_config_commands="$ac_config_commands openssl"
 ac_config_commands="$ac_config_commands lua"
 
 
+ac_config_commands="$ac_config_commands zlib"
+
+
+
 ac_config_commands="$ac_config_commands sqlite"
 
+
+
+ac_config_commands="$ac_config_commands curl"
 
 
 
 ac_config_commands="$ac_config_commands SDL"
 
+
+
+ac_config_commands="$ac_config_commands PokemonSMSCore"
 
 
 
@@ -3550,12 +3560,14 @@ do
     "util/shadenbt/Makefile") CONFIG_FILES="$CONFIG_FILES util/shadenbt/Makefile" ;;
     "util/net/Makefile") CONFIG_FILES="$CONFIG_FILES util/net/Makefile" ;;
     "util/collect/Makefile") CONFIG_FILES="$CONFIG_FILES util/collect/Makefile" ;;
-    "sqlite/Makefile") CONFIG_FILES="$CONFIG_FILES sqlite/Makefile" ;;
     "json-c") CONFIG_COMMANDS="$CONFIG_COMMANDS json-c" ;;
     "openssl") CONFIG_COMMANDS="$CONFIG_COMMANDS openssl" ;;
     "lua") CONFIG_COMMANDS="$CONFIG_COMMANDS lua" ;;
+    "zlib") CONFIG_COMMANDS="$CONFIG_COMMANDS zlib" ;;
     "sqlite") CONFIG_COMMANDS="$CONFIG_COMMANDS sqlite" ;;
+    "curl") CONFIG_COMMANDS="$CONFIG_COMMANDS curl" ;;
     "SDL") CONFIG_COMMANDS="$CONFIG_COMMANDS SDL" ;;
+    "PokemonSMSCore") CONFIG_COMMANDS="$CONFIG_COMMANDS PokemonSMSCore" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -3993,17 +4005,29 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 	mkdir -p openssl
 	pushd ./openssl
 	../$ac_top_srcdir/openssl/config
-	ln -sfv ../$ac_top_srcdir/include ./
 	popd
  ;;
     "lua":C)
 	cp -r $ac_top_srcdir/lua .
  ;;
+    "zlib":C)
+	mkdir -p zlib
+	pushd ./zlib
+	../$ac_top_srcdir/zlib/configure
+	popd
+ ;;
     "sqlite":C)
 	mkdir -p sqlite
 	pushd ./sqlite
-	../$ac_top_srcdir/sqlite/configure
+	LDFLAGS="-L$ac_abs_top_builddir/zlib" ../$ac_top_srcdir/sqlite/configure
 	touch ../$ac_top_srcdir/sqlite/manifest{,.uuid} # sqlite for some reason wanted a manifest at its source directory. Make sure they exist as part of the configure steps
+	popd
+ ;;
+    "curl":C)
+	mkdir -p curl
+	pushd ./curl
+	echo "$ac_abs_top_srcdir"
+	LDFLAGS="-L$ac_abs_top_builddir/openssl -L$ac_abs_top_builddir/zlib" ../$ac_top_srcdir/curl/configure
 	popd
  ;;
     "SDL":C)
@@ -4011,6 +4035,9 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 	pushd ./SDL
 	../$ac_top_srcdir/SDL/configure
 	popd
+ ;;
+    "PokemonSMSCore":C)
+	test -e PokemonSMS-Core || ln -sf $ac_srcdir/PokemonSMS-Core .
  ;;
 
   esac

@@ -10,10 +10,6 @@ enum ShadeVersions{
     v1_3 = 3
 };
 
-enum ShadeMagic{
-    ShadeNBT = 0xAD4E4254,
-    CryptoShade = 0xEC4E4254
-};
 
 enum ShadeFlags{
     Little = 0x80

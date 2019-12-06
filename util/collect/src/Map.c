@@ -27,7 +27,7 @@ void free_dtor(void* alloc_data,void* value){
 }
 
 static Node* map_getParent(Node* node){
-    return node?NULL:node->parent;
+    return !node?NULL:node->parent;
 }
 
 static Node* map_getGrandparent(Node* node){
@@ -136,7 +136,7 @@ void map_put(TreeMap* map,const void* key,void* value){
         nnode->color = BLACK;
 	    map->root = nnode;
 	    map->serialNodes = LinkedList_new(NULL);
-	    LinkedList_pushBack(map->serialNodes,node);
+	    LinkedList_pushBack(map->serialNodes,nnode);
         return;
     }
     while(true){
@@ -168,7 +168,7 @@ void map_put(TreeMap* map,const void* key,void* value){
     nnode->right = NULL;
     nnode->color = RED;
     map_repair(nnode);
-    LinkedList_pushBack(map->serialNodes,node);
+    LinkedList_pushBack(map->serialNodes,nnode);
 }
 
 void* map_get(TreeMap* map,const void* key){
@@ -199,7 +199,8 @@ static void node_free(Node* node,TreeMap* map){
     if(node){
         node_free(node->left,map);
         node_free(node->right,map);
-        map->value_dealloc(map->alloc_data,node->value);
+        if(node->value)
+            map->value_dealloc(map->alloc_data,node->value);
         if(map->key_dealloc)
             map->key_dealloc(map->alloc_data,(void*)node->key);
         free(node);
@@ -214,13 +215,17 @@ void map_free(TreeMap* map){
 }
 
 MapIterator* map_begin(TreeMap* map){
-    return (MapIterator*)LinkedList_begin(map->serialNodes);
+    return map->serialNodes!=NULL?(MapIterator*)LinkedList_begin(map->serialNodes):NULL;
 }
 MapIterator* map_next(MapIterator* it){
     return (MapIterator*)LinkedList_next((Iterator*)it);
 }
 const void* map_deref_it(MapIterator* it){
     return ((Node*)LinkedList_dereference((Iterator*)it))->key;
+}
+
+void* map_deref_it_value(MapIterator* it){
+    return ((Node*)LinkedList_dereference((Iterator*)it))->value;
 }
 
 

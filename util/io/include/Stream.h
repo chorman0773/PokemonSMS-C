@@ -180,7 +180,17 @@ IO_API stream_status InputStream_checkError(const InputStream* stream);
 */
 IO_API stream_status OutputStream_checkError(const OutputStream* stream);
 
+/**
+* Clears the any error on the output Stream.
+* After this call, before any failing call to InputStream_read, InputStream_checkError will not return IO_status_ERROR.
+* It is implementation-specific if IO_status_EOF will also be cleared
+*/
 IO_API void InputStream_clearError(InputStream* stream);
+/**
+* Clears the any error on the output Stream.
+* After this call, before any failing call to OutputStream_write, OutputStream_checkError will not return IO_status_ERROR.
+* It is implementation-specific if IO_status_EOF will also be cleared.
+*/
 IO_API void OutputStream_clearError(OutputStream* stream);
 
 /**
@@ -208,8 +218,19 @@ IO_API InputStream* InputStream_from(FILE* file);
 */
 IO_API InputStream* InputStream_openFilename(const char* name);
 
+/**
+* Opens a File OutputStream as though by OutputStream_new(IO_file(),file).
+* file shall be suitable for writing, as defined by IO_file(). Ownership of file is taken by this call as stated in IO_file().
+*/
 IO_API OutputStream* OutputStream_from(FILE* file);
+
+/**
+* Opens a File OutputStream as though by OutputStream_new(IO_file(),fopen(name,"wb")).
+*/
 IO_API OutputStream* OutputStream_openFilename(const char* name);
+/**
+* Opens a File OutputStream as though by OutputStream_new(IO_file(),fopen(name,"ab")).
+*/
 IO_API OutputStream* OutputStream_appendFilename(const char* name);
 
 #ifdef __cplusplus

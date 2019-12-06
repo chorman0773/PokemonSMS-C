@@ -1,6 +1,8 @@
 #ifndef UTIL_COLLECT_LIST_H_2019_12_01_12_35
 #define UTIL_COLLECT_LIST_H_2019_12_01_12_35
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern"C"{
 #endif

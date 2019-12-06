@@ -27,6 +27,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 `lua` is released under the terms of the MIT License. It is Copyright (C) 1994–2019 Lua.org, PUC-Rio.
 
+`zlib` is released under its license. (C) 1995-2017 Jean-loup Gailly and Mark Adler. Permission is granted as an exemption of the GNU General Public License to link against the provided or a system version of zlib.
+
 `PokemonSMS-Core` is licensed under the GNU Lesser General Public License Version 3. (Copyright (C) 2018-2019 Connor Horman)
 
 `random` and `libconinteract` are both licensed under the terms of the MIT License (Copyright (C) 2018-2019 Connor Horman)

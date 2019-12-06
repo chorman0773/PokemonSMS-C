@@ -28,9 +28,9 @@ static size_t IO_file_read(void* data,size_t sz,void* obj){
 }
 
 static int32_t IO_file_readByte(void* obj){
-    char _out;
+    uint8_t _out;
     if(IO_file_read(&_out,1,obj))
-        return _out;
+        return (_out)&0xff;
     else
         return -1;
 }

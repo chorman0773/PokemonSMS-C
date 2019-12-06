@@ -3,8 +3,8 @@ CC = @CC@
 INSTALL = @INSTALL@
 CDIALECT = c11
 
-INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @builddir@/sqlite @builddir@/SDL/include @srcdir@/SDL/include
-LIBS += m random coninteract ssl crypto sqlite3 lua json-c SDL
+INCLUDES += @srcdir@/include @srcdir@/random/include @srcdir@/libconinteract/include @builddir@/sqlite @builddir@/SDL/include @srcdir@/SDL/include $(wildcard @srcdir@/util/*/include)
+LIBS += m random coninteract ssl crypto sqlite3 lua json-c SDL io shadenbt collect
 DEFINES += PLATFORM_OS=@os@
 
 LIBDIRS = @builddir@/libconinteract @builddir@/random @builddir@/openssl @builddir@/sqlite/.libs @builddir@/json-c/.libs @builddir@/lua $(wildcard @builddir@/util/*) @builddir@/SDL/build/.libs
@@ -56,19 +56,23 @@ OBJECTS := $(OUTDIR)/Main.o
 
 OUTPUT := @builddir@/game@EXEEXT@
 
-all-recursive:
+all-recursive: Makefile
 	+$(MAKE) -C random all
 	+$(MAKE) -C libconinteract all
 	+$(MAKE) -C lua all
-	+$(MAKE) -C sqlite all
 	+$(MAKE) -C openssl all
+	+$(MAKE) -C zlib all
+	+$(MAKE) -C sqlite all
 	+$(MAKE) -C json-c all
 	+$(MAKE) -C util all
 	+$(MAKE) -C SDL all
-	+$(MAKE) all
 	+$(MAKE) libs
+	+$(MAKE) all
 
 all: $(OUTPUT)
+
+Makefile: @srcdir@/Makefile.in
+	./config.status Makefile
 
 .PHONY: libs
 
@@ -89,6 +93,7 @@ $(OUTDIR)/%.o: $(SRCDIR)/%.c | $(OUTDIR)/
 clean: 
 	rm -rf out/
 	rm -f $(OUTPUT)
+	rm -rf libs/
 	
 rebuild: 
 	+$(MAKE) clean

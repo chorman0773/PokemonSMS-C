@@ -31,6 +31,8 @@ typedef void(error_handler_t)(void*,const char*);
 
 IO_API BinaryIO* wrapInputStream(InputStream* stream,endianess end);
 IO_API BinaryIO* wrapOutputStream(OutputStream* stream,endianess end);
+IO_API InputStream* get_wrapped_input(BinaryIO* io);
+IO_API OutputStream* get_wrapped_output(BinaryIO* out);
 IO_API error_handler_t* setErrorHandler(BinaryIO* io,error_handler_t* err_handler,void* data,void** savedData);
 
 IO_API void BinaryIO_free(BinaryIO*);
@@ -53,6 +55,7 @@ IO_API void write_uuid(BinaryIO* out,UUID id);
 IO_API void write_string(BinaryIO* out,const char* ch);
 IO_API void write_duration(BinaryIO* out,Duration dur);
 IO_API void write_instant(BinaryIO* out,Instant dur);
+IO_API void write_bytes(BinaryIO* out,const void* bytes,size_t len);
 
 IO_API int8_t read_i8(BinaryIO* in);
 IO_API int16_t read_i16(BinaryIO* in);
@@ -75,6 +78,8 @@ IO_API UUID read_uuid(BinaryIO* in);
 IO_API char* read_string(BinaryIO* in);
 IO_API Duration read_duration(BinaryIO* in);
 IO_API Instant read_instant(BinaryIO* in);
+IO_API size_t read_fully(BinaryIO* io,void* out,size_t len);
+
 
 IO_API void BinaryIO_raise_error(BinaryIO* io,const char* msg);
 IO_API const char* BinaryIO_last_error(BinaryIO* io);

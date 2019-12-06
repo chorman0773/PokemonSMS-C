@@ -8,9 +8,9 @@ LIBDIRS = $(UTIL_BUILDDIR)/io $(TOP_LEVEL_BUILDDIR)/openssl $(UTIL_BUILDDIR)/col
 
 LIBRARIES = io ssl crypto collect
 
-OBJECTS = @builddir@/out/NBT.o
+OBJECTS = @builddir@/out/NBT.o @builddir@/out/ShadeNBT.o
 
-INCLUDES = @srcdir@/include @srcdir@/../time/include @srcdir@/../io/include @srcdir@/../collect/include
+INCLUDES = @srcdir@/include @srcdir@/../time/include @srcdir@/../io/include @srcdir@/../collect/include @top_srcdir@/openssl/include
 
 all: $(OUTPUT)
 	
@@ -18,7 +18,7 @@ $(OUTPUT): $(OBJECTS)
 	@CC@ @LDFLAGS@ $(foreach libdir,$(LIBDIRS),-L$(libdir)) -shared -o $@ $^ $(foreach library,$(LIBRARIES),-l$(library))
 
 @builddir@/out/%.o: @srcdir@/src/%.c | @builddir@/out/
-	@CC@ @CFLAGS@ -Wall -pedantic -std=c99 -fPIC $(foreach include,$(INCLUDES),-I$(include)) -c -o $@ $^
+	@CC@ @CFLAGS@ -Wall -std=c99 -fPIC $(foreach include,$(INCLUDES),-I$(include)) -c -o $@ $^
 
 @builddir@/out/:
 	mkdir $@

@@ -21,7 +21,7 @@ os=${target_os}
 AC_SUBST([os])
 
 
-AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile sqlite/Makefile])
+AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile])
 
 AC_CONFIG_COMMANDS([json-c],[
 	mkdir -p json-c
@@ -38,23 +38,40 @@ AC_CONFIG_COMMANDS([openssl],[
 	mkdir -p openssl
 	pushd ./openssl
 	../$ac_top_srcdir/openssl/config
-	ln -sfv ../$ac_top_srcdir/include ./
 	popd
 ])
 
 
 AC_CONFIG_COMMANDS([lua],[
+	rm -rf ./lua
 	cp -r $ac_top_srcdir/lua .
+	patch ./lua/makefile $ac_top_srcdir/lua.patch
 ])
+
+AC_CONFIG_COMMANDS([zlib],[
+	mkdir -p zlib
+	pushd ./zlib
+	../$ac_top_srcdir/zlib/configure
+	popd
+])
+
 
 AC_CONFIG_COMMANDS([sqlite],[
 	mkdir -p sqlite
 	pushd ./sqlite
-	../$ac_top_srcdir/sqlite/configure
+	LDFLAGS="-L$ac_abs_top_builddir/zlib" ../$ac_top_srcdir/sqlite/configure
 	touch ../$ac_top_srcdir/sqlite/manifest{,.uuid} # sqlite for some reason wanted a manifest at its source directory. Make sure they exist as part of the configure steps
 	popd
 ])
 
+
+AC_CONFIG_COMMANDS([curl],[
+	mkdir -p curl
+	pushd ./curl
+	echo "$ac_abs_top_srcdir"
+	LDFLAGS="-L$ac_abs_top_builddir/openssl -L$ac_abs_top_builddir/zlib" ../$ac_top_srcdir/curl/configure
+	popd
+])
 
 
 AC_CONFIG_COMMANDS([SDL],[
@@ -64,6 +81,10 @@ AC_CONFIG_COMMANDS([SDL],[
 	popd
 ])
 
+
+AC_CONFIG_COMMANDS([PokemonSMSCore],[
+	test -e PokemonSMS-Core || ln -sf $ac_srcdir/PokemonSMS-Core .
+])
 
 
 AC_OUTPUT

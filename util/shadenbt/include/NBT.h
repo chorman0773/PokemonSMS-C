@@ -45,7 +45,7 @@ typedef struct NBTList{
 
 typedef struct ByteArray{
     int32_t len;
-    unsigned char* buff;
+    unsigned char* array;
 } ByteArray;
 
 typedef struct IntArray{
@@ -87,7 +87,7 @@ int64_t* NBT_AsLong(NBT_Tag* tag);
 float* NBT_AsFloat(NBT_Tag* tag);
 double* NBT_AsDouble(NBT_Tag* tag);
 const char* NBT_GetString(NBT_Tag* tag);
-void NBT_SetString(NBT_Tag* tag,const char* tag);
+void NBT_SetString(NBT_Tag* tag,const char* str);
 UUID* NBT_AsUUID(NBT_Tag* tag);
 
 //Primitive-generic accessors
@@ -112,10 +112,10 @@ DoubleArray* NBT_AsDoubleArray(NBT_Tag* tag);
 
 bool NBT_IsTagType(NBT_Tag* tag,TAG_Type);
 
-void Compound_PutTag(CompoundTag* tag,const char* name,NBT_Tag* tag);
+void Compound_PutTag(CompoundTag* tag,const char* name,NBT_Tag* nbt);
 NBT_Tag* Compound_GetTag(CompoundTag* tag,const char* name);
 bool Compound_HasTag(CompoundTag* tag,const char* name);
-bool Compound_HasTagType(CompoundTag* tag,const char* name,Tag_Type);
+bool Compound_HasTagType(CompoundTag* tag,const char* name,TAG_Type);
 bool Compound_GetBoolean(CompoundTag* tag,const char* name);
 int8_t Compound_GetByte(CompoundTag* tag,const char* name);
 int16_t Compound_GetShort(CompoundTag* tag,const char* name);
@@ -124,9 +124,17 @@ int64_t Compound_GetLong(CompoundTag* tag,const char* name);
 float Compound_GetFloat(CompoundTag* tag,const char* name);
 double Compound_GetDouble(CompoundTag* tag,const char* name);
 UUID Compound_GetUUID(CompoundTag* tag,const char* name);
+void Compound_SetBoolean(CompoundTag* tag,const char* name,bool val);
+void Compound_SetByte(CompoundTag* tag,const char* name,int8_t val);
+void Compound_SetShort(CompoundTag* tag,const char* name,int16_t val);
+void Compound_SetInt(CompoundTag* tag,const char* name,int32_t val);
+void Compound_SetLong(CompoundTag* tag,const char* name,int64_t val);
+void Compound_SetFloat(CompoundTag* tag,const char* name,float val);
+void Compound_SetDouble(CompoundTag* tag,const char* name,double val);
+void Compound_SetUUID(CompoundTag* tag,const char* name,UUID uuid);
 
 int32_t List_GetLength(ListTag* tag);
-Tag_Type List_GetListTagType(ListTag* tag);
+TAG_Type List_GetListTagType(ListTag* tag);
 bool List_Add(ListTag* tag,NBT_Tag* toAdd);
 NBT_Tag* List_Get(ListTag* tag,int32_t idx);
 

@@ -3,7 +3,7 @@
 	url = ../libconinteract.git
 [submodule "lua"]
 	path = lua
-	url = https://github.com/lua/lua.git
+	url = ../lua.git
 [submodule "json-c"]
 	path = json-c
 	url = https://github.com/json-c/json-c.git
@@ -25,3 +25,6 @@
 [submodule "SDL"]
 	path = SDL
 	url = https://github.com/SDL-mirror/SDL.git
+[submodule "zlib"]
+	path = zlib
+	url = https://github.com/madler/zlib.git

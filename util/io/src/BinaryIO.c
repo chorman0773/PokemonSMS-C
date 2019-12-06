@@ -8,7 +8,7 @@
 struct BinaryIO{
     InputStream* in;
     OutputStream* out;
-    err_handler_t* err_handler;
+    error_handler_t* err_handler;
     void* err_data;
     const char* lastError;
     endianess end;
@@ -47,7 +47,7 @@ error_handler_t* setErrorHandler(BinaryIO* io,error_handler_t* err_handler,void*
         *dataOut = io->err_data;
     if(err_handler!=NULL)
         io->err_handler = err_handler;
-    if(err_data!=NULL)
+    if(data!=NULL)
         io->err_data = data;
     return prev_handler;
 }
@@ -70,8 +70,8 @@ void write_i16(BinaryIO* out,int16_t val){
         write_i8(out,(uint8_t)val);
         write_i8(out,(uint8_t)(val>>8));
     }else{
-        write_i8(out,(uint8_t)val);
         write_i8(out,(uint8_t)(val>>8));
+        write_i8(out,(uint8_t)val);
     }
 }
 void write_i32(BinaryIO* out,int32_t val){
@@ -116,8 +116,8 @@ void write_u16(BinaryIO* out,uint16_t val){
         write_i8(out,(uint8_t)val);
         write_i8(out,(uint8_t)(val>>8));
     }else{
-        write_i8(out,(uint8_t)val);
         write_i8(out,(uint8_t)(val>>8));
+        write_i8(out,(uint8_t)val);
     }
 }
 void write_u32(BinaryIO* out,uint32_t val){
@@ -227,16 +227,16 @@ uint32_t read_u32(BinaryIO* in){
         return tmp | ((uint32_t)read_u16(in))<<16;
     }else{
         uint16_t tmp = read_u16(in);
-        return ((uint32_t)tmp)<<8 | read_u8(in);
+        return ((uint32_t)tmp)<<8 | read_u16(in);
     }    
 }
 uint64_t read_u64(BinaryIO* in){
     if(in->end==BINARY_LITTLE_ENDIAN){
         uint32_t tmp = read_u32(in);
-        return tmp | ((uint64_t)read_u16(in))<<32;
+        return tmp | ((uint64_t)read_u32(in))<<32;
     }else{
-        uint32_t tmp = read_u16(in);
-        return ((uint64_t)tmp)<<32 | read_u8(in);
+        uint32_t tmp = read_u32(in);
+        return ((uint64_t)tmp)<<32 | read_u32(in);
     } 
 }  
 float read_f32(BinaryIO* out){
@@ -250,7 +250,7 @@ double read_f64(BinaryIO* out){
     union{
         uint64_t a;
         double f;
-    } u = {read_u32(out)};
+    } u = {read_u64(out)};
     return u.f;
 }
 bool read_bool(BinaryIO* out){
@@ -260,7 +260,7 @@ bool read_bool(BinaryIO* out){
     else if(val==0)
         return false;
     else{
-        out->err_handler(out->err_data);
+        BinaryIO_raise_error(out,"Read Boolean has invalid representation");
         return true;
     }
 }
@@ -279,7 +279,7 @@ char* read_string(BinaryIO* in){
     char* buff = malloc(len+1);
     if(InputStream_read(in->in,buff,len)!=len){
         free(buff);
-        in->err_handler(in->err_data);
+        BinaryIO_raise_error(in,"Abrupt end of file while reading string");
         return NULL;
     }
     buff[len] = '\0';
@@ -298,7 +298,7 @@ Duration read_duration(BinaryIO* in){
     if(dur.nanos>=1000000){
         dur.seconds = 0xFFFFFFFFFFFFFFFF;
         dur.nanos = 0xFFFFFFFF;
-        in->err_handler(in->err_data);
+        BinaryIO_raise_error(in,"Invalid Duration");
     }
     return dur;
 }
@@ -310,9 +310,21 @@ Instant read_instant(BinaryIO* in){
     if(dur.nanos>=1000000){
         dur.seconds = 0xFFFFFFFFFFFFFFFF;
         dur.nanos = 0xFFFFFFFF;
-        in->err_handler(in->err_data);
+        BinaryIO_raise_error(in,"Invalid Instant");
     }
     return dur;
+}
+
+void write_bytes(BinaryIO* out,const void* bytes,size_t len){
+    OutputStream_write(out->out,bytes,len);
+}
+size_t read_fully(BinaryIO* io,void* out,size_t len){
+    size_t read = InputStream_read(io->in,out,len);
+    if(read!=len){
+        BinaryIO_raise_error(io,"read_fully ends abruptly");
+        return read;
+    }
+    return read;
 }
 
 void BinaryIO_raise_error(BinaryIO* io,const char* error){
@@ -323,3 +335,11 @@ void BinaryIO_raise_error(BinaryIO* io,const char* error){
 const char* BinaryIO_last_error(BinaryIO* io){
     return io->lastError;
 }
+
+InputStream* get_wrapped_input(BinaryIO* io){
+    return io->in;
+}
+OutputStream* get_wrapped_output(BinaryIO* out){
+    return out->out;
+}
+

@@ -1,5 +1,5 @@
 
-OUTPUT = libshadenbt.so
+OUTPUT = libpkmcom.so
 
 TOP_LEVEL_BUILDDIR = @top_builddir@
 UTIL_BUILDDIR = @builddir@/..

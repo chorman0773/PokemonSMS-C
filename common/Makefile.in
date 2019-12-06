@@ -1,0 +1,40 @@
+BUILDDIR = @builddir@
+TOP_BUILDDIR = @top_builddir@
+SRCDIR = @srcdir@
+TOP_SRCDIR = @top_srcdir@
+CC = @CC@
+CPPFLAGS = @CPPFLAGS@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+
+OBJDIR = $(BUILDDIR)/out
+SRC = $(SRCDIR)/src
+
+DEFINES = 
+LIBDIRS = $(TOP_BUILDDIR)/lua $(TOP_BUILDDIR)/json-c/.libs $(TOP_BUILDDIR)/util/collect
+LIBRARIES = lua json-c collect
+INCLUDES = $(TOP_SRCDIR)/lua $(TOP_SRCDIR)/json-c $(TOP_BUILDDIR)/json-c $(TOP_SRCDIR)/util/collect/include
+
+ALL_CPPFLAGS = $(CPPFLAGS) $(foreach include,$(INCLUDES),-I$(include)) $(foreach defn,$(DEFINES),-D$(defn))
+ALL_CFLAGS = $(CFLAGS) -fPIC -pthread
+ALL_LDFLAGS = $(LDFLAGS) -shared -pthread $(foreach $(libdir),$(LIBDIRS),-L$(libdir))
+
+OUTPUT = libpokemonsms-common.so
+
+OBJECTS = 
+
+all: $(OUTPUT)
+
+$(OUTPUT): $(OBJECTS)
+	$(CC) $(ALL_LDFLAGS) -o $@ $^ $(foreach lib,$(LIBRARIES),-l$(lib))
+
+$(OBJDIR)/:
+	mkdir $(OBJDIR)/
+
+$(OBJDIR)/%.o: $(SRC)/%.c | $(OBJDIR)/
+	$(CC) $(ALL_CFLAGS) -c -o $@ $^
+
+clean:
+	rm -rf $(OBJDIR) $(OUTPUT)
+
+

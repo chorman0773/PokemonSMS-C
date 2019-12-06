@@ -29,6 +29,7 @@ void map_free(TreeMap* map);
 MapIterator* map_begin(TreeMap* map);
 MapIterator* map_next(MapIterator* it);
 const void* map_deref_it(MapIterator* it);
+void* map_deref_it_value(MapIterator* it);
 
 #ifdef __cplusplus
 }
