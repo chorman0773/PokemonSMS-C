@@ -21,7 +21,7 @@ os=${target_os}
 AC_SUBST([os])
 
 
-AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile])
+AC_CONFIG_FILES([Makefile libconinteract/Makefile random/Makefile util/Makefile util/io/Makefile util/shadenbt/Makefile util/net/Makefile util/collect/Makefile common/Makefile])
 
 AC_CONFIG_COMMANDS([json-c],[
 	mkdir -p json-c
@@ -45,7 +45,6 @@ AC_CONFIG_COMMANDS([openssl],[
 AC_CONFIG_COMMANDS([lua],[
 	rm -rf ./lua
 	cp -r $ac_top_srcdir/lua .
-	patch ./lua/makefile $ac_top_srcdir/lua.patch
 ])
 
 AC_CONFIG_COMMANDS([zlib],[

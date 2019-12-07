@@ -66,13 +66,20 @@ all-recursive: Makefile
 	+$(MAKE) -C json-c all
 	+$(MAKE) -C util all
 	+$(MAKE) -C SDL all
+	+$(MAKE) -C common all
 	+$(MAKE) libs
 	+$(MAKE) all
 
 all: $(OUTPUT)
 
-Makefile: @srcdir@/Makefile.in
+Makefile: @srcdir@/Makefile.in ./config.status
 	./config.status Makefile
+
+./config.status: @srcdir@/configure
+	./config.status --recheck
+
+@srcdir@/configure: @srcdir@/configure.ac
+	autoreconf @srcdir@
 
 .PHONY: libs
 

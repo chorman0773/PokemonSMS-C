@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 `curl` is released under the terms of a License Derived from the MIT License. Copyright (c) 1996 - 2019, Daniel Stenberg. 
 
-`sqlite` is dedicated by its developers to public domain. This dedication is preserved by the program. See <https://www.sqlite.org/copyright.html> for details on this dedication. 
+`sqlite` is dedicated by its developers to public domain. This dedication is preserved by this program. See <https://www.sqlite.org/copyright.html> for details on this dedication. 
 
 `lua` is released under the terms of the MIT License. It is Copyright (C) 1994–2019 Lua.org, PUC-Rio.
 
