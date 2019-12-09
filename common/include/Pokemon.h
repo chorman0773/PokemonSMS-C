@@ -1,8 +1,10 @@
-#ifdef COMMON_POKEMON_H_2019_12_05_18_05
+#ifndef COMMON_POKEMON_H_2019_12_05_18_05
 #define COMMON_POKEMON_H_2019_12_05_18_05
 
 #ifdef __cplusplus
 extern"C"{
+#else
+#include <stdbool.h>
 #endif
 #include <CommonLibrary.h>
 #include <stdint.h>
@@ -34,33 +36,27 @@ enum{
     STAT_HP      = 5
 };
 
-typedef bool(*item_CanHold)(ItemStack*,Pokemon*);
-typedef bool(*item_CanUseOn)(ItemStack*,Pokemon*);
+typedef bool(item_CanHold)(void*,ItemStack*,Pokemon*);
+typedef bool(item_CanUseOn)(void*,ItemStack*,Pokemon*);
 
-typedef bool(*move_CanUse)(void*,Move*,Pokemon*);
-typedef Type*(*move_GetType)(void*,Move*,Pokemon*);
-typedef MoveCategory(*move_GetCategory)(void*,Move*,Pokemon*);
+typedef bool(move_CanUse)(void*,Move*,Pokemon*);
+typedef Type*(move_GetType)(void*,Move*,Pokemon*);
+typedef MoveCategory(move_GetCategory)(void*,Move*,Pokemon*);
 
-typedef Form*(*pokemon_GetForm)(void*,Pokemon*);
+typedef Form*(pokemon_GetForm)(void*,Pokemon*);
 
-typedef void(*event_handler)(void*,uint32_t,...);
+typedef void(event_handler)(void*,uint32_t,...);
 
 typedef uint32_t Field;
-
-Type* Type_system_typeless();
-Move* Move_null();
-Ability* Ability_null();
-Item* Item_null();
-PokemonSpecies* Species_null();
 
 enum{
     /* const char* */
     FIELD_LOCATION = 0,
-    /* struct json_object * */
+    /* struct json_object* */
     FIELD_UNNAME = 1,
-    /* struct json_object * */
+    /* struct json_object* */
     FIELD_DESCRIPTION = 2,
-    /* event_handler */
+    /* event_handler*,void* */
     FIELD_BUS = 3,
     /* const char* */
     FIELD_TYPE_ADD_WEEKNESS = 4,
@@ -74,9 +70,9 @@ enum{
     FIELD_ITEM_DEFAULT_FORM = 8,
     /* const char* */
     FIELD_ITEM_ADD_TRAIT = 9,
-    /* item_CanHold,void* */
+    /* item_CanHold*,void* */
     FIELD_ITEM_CAN_HOLD_FN = 10,
-    /* item_CanUseOn,void* */
+    /* item_CanUseOn*,void* */
     FIELD_ITEM_CAN_USE_ON_FN = 11,
     /* const char* */
     FIELD_MOVE_TYPE = 12,
@@ -88,11 +84,11 @@ enum{
     FIELD_MOVE_ACCURACY = 15,
     /* const char* */
     FIELD_MOVE_ADD_TRAIT = 16,
-    /* move_CanUse,void* */
+    /* move_CanUse*,void* */
     FIELD_MOVE_CAN_USE_FN = 17,
-    /* move_GetType,void* */
+    /* move_GetType*,void* */
     FIELD_MOVE_GET_TYPE_FN = 18,
-    /* move_GetCategory,void* */
+    /* move_GetCategory*,void* */
     FIELD_MOVE_GET_CATEGORY_FN = 19,
     /* uint8_t */
     FIELD_MOVE_PP_BASE = 20,
@@ -112,7 +108,7 @@ enum{
     FIELD_SPECIES_ADD_FORM = 27,
     /* const char* */
     FIELD_SPECIES_DEFAULT_FORM = 28,
-    /* uint32_t */
+    /* uint16_t */
     FIELD_SPECIES_REGIONAL_NUMBER = 29,
     /* uint32_t */
     FIELD_SPECIES_NATIONAL_HINT = 30,
@@ -124,18 +120,38 @@ enum{
     FIELD_ABILITY_ADD_LIFETIME_TIED = 40
 };
 
+POKEMONSMS_COMMON_API Type* Type_new();
+POKEMONSMS_COMMON_API Move* Move_new();
+POKEMONSMS_COMMON_API Ability* Ability_new();
+POKEMONSMS_COMMON_API Form* Form_new();
+POKEMONSMS_COMMON_API PokemonSpecies* Species_new();
+POKEMONSMS_COMMON_API Item* Item_new();
+
+POKEMONSMS_COMMON_API Type* Type_dup(Type*);
+POKEMONSMS_COMMON_API Move* Move_dup(Move*);
+POKEMONSMS_COMMON_API Ability* Ability_dup(Ability*);
+POKEMONSMS_COMMON_API Form* Form_dup(Form*);
+POKEMONSMS_COMMON_API Item* Item_dup(Item*);
+
 POKEMONSMS_COMMON_API void Type_setField(Type*,Field,...);
 POKEMONSMS_COMMON_API void Move_setField(Move*,Field,...);
 POKEMONSMS_COMMON_API void Ability_setField(Ability*,Field,...);
 POKEMONSMS_COMMON_API void Form_setField(Form*,Field,...);
 POKEMONSMS_COMMON_API void Species_setField(PokemonSpecies*,Field,...);
 POKEMONSMS_COMMON_API void Item_setField(Item*,Field,...);
+
 POKEMONSMS_COMMON_API void Type_register(Type*);
 POKEMONSMS_COMMON_API void Move_register(Move*);
 POKEMONSMS_COMMON_API void Ability_register(Ability*);
 POKEMONSMS_COMMON_API void Species_register(PokemonSpecies*);
 POKEMONSMS_COMMON_API void Item_register(Item*);
 
+POKEMONSMS_COMMON_API void Type_free(Type*);
+POKEMONSMS_COMMON_API void Move_free(Move*);
+POKEMONSMS_COMMON_API void Ability_free(Ability*);
+POKEMONSMS_COMMON_API void Species_free(PokemonSpecies*);
+POKEMONSMS_COMMON_API void Form_free(Form*);
+POKEMONSMS_COMMON_API void Item_free(Item*);
 
 
 #ifdef __cplusplus

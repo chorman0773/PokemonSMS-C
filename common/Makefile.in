@@ -21,7 +21,7 @@ ALL_LDFLAGS = $(LDFLAGS) -shared -pthread $(foreach libdir,$(LIBDIRS),-L$(libdir
 
 OUTPUT = libpokemonsms-common.so
 
-OBJECTS = $(OBJDIR)/LibMain.o
+OBJECTS = $(OBJDIR)/LibMain.o $(OBJDIR)/Pokemon.o
 
 all: $(OUTPUT)
 
