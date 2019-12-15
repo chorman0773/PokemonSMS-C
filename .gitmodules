@@ -28,3 +28,6 @@
 [submodule "zlib"]
 	path = zlib
 	url = https://github.com/madler/zlib.git
+[submodule "util"]
+	path = util
+	url = ../C-Programming-Utilities.git

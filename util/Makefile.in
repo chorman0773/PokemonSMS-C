@@ -1,6 +1,0 @@
-
-all: 
-	+$(MAKE) -C io all
-	+$(MAKE) -C collect all
-	+$(MAKE) -C shadenbt all
-	+$(MAKE) -C net all

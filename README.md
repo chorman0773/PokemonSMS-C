@@ -39,14 +39,13 @@ The project and all components are not offered for a fee, and are believed to fa
 ### Utility Programs
 
 Several programs of varying size are under the `util` and are built for linking purposes. These programs achieve various tasks necessary to execute the game, but not otherwise available. 
-The programs include
-`io` a LCS 4 (tentative, currently available as Connor Horman LCSD 1) compatible Binary IO Library.
 
-`shadenbt` which is used to save game progress in the ShadeNBT Format described [here](https://chorman0773.github.io/BinarySpecifiations/ShadeNBT). 
+The programs include:
 
-`pkmcom` which implements the PkmCom Abstract Protocol and a Number of Base Protocols, including ones not part of the PkmCom Specification. 
-
-`collect` a basic C library that provides various data structures. 
+* `io` a LCS 4 compatible Binary IO Library.
+* `shadenbt` which is used to save game progress in the ShadeNBT Format described [here](https://chorman0773.github.io/BinarySpecifiations/ShadeNBT). 
+* `pkmcom` which implements the PkmCom Abstract Protocol and a Number of Base Protocols, including ones not part of the PkmCom Specification. 
+* `collect` a basic C library that provides various data structures. 
 
 
 ## Building

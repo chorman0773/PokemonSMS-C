@@ -50,15 +50,22 @@ static void common_run(void){
         LinkedList_remove(it);
         pthread_mutex_unlock(&queue_lock);
         dispatch->callback(dispatch->handle,dispatch->key,common_lua_thread);
+        pthread_cond_broadcast(&dispatch->exit_condition);
+        pthread_cond_destroy(&dispatch->exit_condition);
     }
 }
 
 
-void PokemonSMS_Common_OnInit(lua_State* state){
+void PokemonSMS_Common_OnInit(void(*register_fns)(lua_State*,void*),void* handle){
     puts("pokemonsms-common: OnInit");
     g_register_fns = register_fns;
     g_handle = handle;
-    lua_newthread = lua_newthread(state);
+    common_lua_thread = lua_newstate(l_alloc,NULL);
+    register_fns(common_lua_thread,handle);
+}
+
+void PokemoSMS_Common_Register(lua_State* state){
+
 }
 
 void PokemonSMS_Common_Load(){
@@ -68,4 +75,5 @@ void PokemonSMS_Common_Load(){
 pthread_cond_t* PokemonSMS_Common_Dispatch(void(*callback)(void*,uint64_t,lua_State*),void* handle,void(*handle_dtor)(void*)){
     pthread_mutex_lock(&queue_lock);
     
+    pthread_mutex_unlock(&queue_lock);
 }
